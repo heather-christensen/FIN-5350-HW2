@@ -33,6 +33,23 @@ def call_payoff(option, spot):
 def put_payoff(option, spot):
     return np.maximum(option.strike - spot, 0.0)
 
+def european_price(option, spot, rate, vol, div, steps, u, d):
+    strike = option.strike
+    expiry = option.expiry
+    call_t = 0.0
+    spot_t = 0.0
+    h = expiry / steps
+    num_nodes = steps + 1
+    pstar = (np.exp(rate * h) - d) / ( u - d)
+    
+    for i in range(num_nodes):
+        spot_t = spot * (u ** (steps - i)) * (d ** (i))
+        call_t += option.payoff(spot_t) * binom.pmf(steps - i, steps, pstar)
+
+    call_t *= np.exp(-rate * expiry)
+    
+    return call_t
+
 def european_binomial(option, spot, rate, vol, div, steps):
     strike = option.strike
     expiry = option.expiry
