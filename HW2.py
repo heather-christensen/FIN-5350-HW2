@@ -64,18 +64,18 @@ def american_binomial(option, spot, rate, vol, div, steps):
     pstar = (np.exp(rate * h) - d) / ( u - d)
     disc = np.exp(-rate * h) 
     spot_t = np.zeros(num_nodes)
-    prc_t = np.zeros(num_nodes)
+    prc_t = np.zeros(num_nodes) 
     
-    for i in range(num_nodes):
-        spot_t[i] = spot * (u ** (steps - i)) * (d ** (i))
-        prc_t[i] = option.payoff(spot_t[i])
+    for j in range(num_nodes):
+        spot_t[j] = spot * (u ** (steps - j)) * (d ** (j))
+        prc_t[j] = option.payoff(spot_t[j]) #gets the payoff
 
 
     for i in range((steps - 1), -1, -1):
         for j in range(i+1):
             prc_t[j] = disc * (pstar * prc_t[j] + (1 - pstar) * prc_t[j+1])
-            spot_t[j] = spot_t[j] / u
-            prc_t[j] = np.maximum(prc_t[j], option.payoff(spot_t[j]))
+            spot_t[j] = spot_t[j] / u #this is getting current spot price?
+            prc_t[j] = np.maximum(prc_t[j], option.payoff(spot_t[j])) #this is the intrinsic value and looks at early exercise and gets whatever is higher)
                     
     return prc_t[0] 
 
